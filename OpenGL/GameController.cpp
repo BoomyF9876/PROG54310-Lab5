@@ -7,13 +7,13 @@ void GameController::Initialize()
     GLFWwindow* window = WindowController::GetInstance().GetWindow();
     M_ASSERT(glewInit() == GLEW_OK, "Unable");
     glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
-    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+    glClearColor(0.1f, 0.1f, 0.1f, 0.0f);
     glEnable(GL_DEPTH_TEST);
     srand(time(0));
 
     camera = new Camera(
         WindowController::GetInstance().GetResolution(),
-        { 200, 200, 200 }, { 0, 0, 0 }, { 0, 1, 0 }
+        { 10, 10, 10 }, { 0, 0, 0 }, { 0, 1, 0 }
     );
 }
 
@@ -25,21 +25,32 @@ void GameController::RunGame()
     shaderDiffuse = new Shader();
     shaderDiffuse->LoadShaders("Diffuse.vertexshader", "Diffuse.fragmentshader");
 
-    meshLight = new Mesh();
-    meshLight->Create(shaderColor);
-    meshLight->SetPosition({ 100, 50, 0 });
-    meshLight->SetScale({ 0.1f, 0.1f, 0.1f });
-
-    for (int i = 0; i < 10; i++)
+    for (int i = 0; i < 4; i++)
     {
-        Mesh* mesh = new Mesh();
-        mesh->Create(shaderDiffuse);
-        mesh->SetLightColor({ 1.0f, 1.0f, 1.0f });
-        mesh->SetLightPosition(meshLight->GetPosition());
-        mesh->SetCameraPosition(camera->GetPosition());
-        mesh->SetScale({ 0.15f, 0.15f, 0.15f });
-        mesh->SetPosition({glm::linearRand(-100.0f, 100.0f), glm::linearRand(-100.0f, 100.0f) , glm::linearRand(-100.0f, 100.0f) });
-        meshes.push_back(mesh);
+        Mesh* light = new Mesh();
+        light->Create(shaderColor);
+        light->SetPosition({ 5.0f, 0.0f, (float)i * 3.0f - 4.0f});
+        light->SetLightDirection(glm::normalize(glm::vec3({0.0f, 0.0f, (float)i * 3.0f - 4.0f}) - light->GetPosition()));
+        light->SetLightColor({ glm::linearRand(0.0f, 1.0f), glm::linearRand(0.0f, 1.0f), glm::linearRand(0.0f, 1.0f) });
+        light->SetScale({ 0.1f, 0.1f, 0.1f });
+        
+        lights.push_back(light);
+    }
+
+
+    for (int row = 0; row < 10; row++)
+    {
+        for (int col = 0; col < 10; col++)
+        {
+            Mesh* mesh = new Mesh();
+            mesh->Create(shaderDiffuse);
+            //mesh->SetLightColor({ 1.0f, 1.0f, 1.0f });
+            //mesh->SetLightPosition(meshLight->GetPosition());
+            mesh->SetCameraPosition(camera->GetPosition());
+            mesh->SetScale({ 1.0f, 1.0f, 1.0f });
+            mesh->SetPosition({0.0f, (float)row * 2.0f - 9.0f, (float)col * 2.0f - 9.0f});
+            meshes.push_back(mesh);
+        }
     }
 
     GLFWwindow* window = WindowController::GetInstance().GetWindow();
@@ -67,12 +78,15 @@ void GameController::RunGame()
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         
-        meshLight->Render(camera->GetProjection() * camera->GetView());
+        for (auto& light: lights)
+        {
+            light->Render(camera->GetProjection() * camera->GetView(), lights);
+        }
         
         for (auto& mesh : meshes)
         {
             mesh->SetRotation(mesh->GetRotation() + glm::vec3(0.0f, 0.001f, 0.0f));
-            mesh->Render(camera->GetProjection() * camera->GetView());
+            mesh->Render(camera->GetProjection() * camera->GetView(), lights);
         }
 
         glfwSwapBuffers(window);
@@ -87,7 +101,12 @@ void GameController::RunGame()
     {
         delete mesh;
     }
-    delete meshLight;
+
+    for (auto& light: lights)
+    {
+        delete light;
+    }
+
     delete shaderColor;
     delete shaderDiffuse;
     delete camera;

@@ -22,7 +22,7 @@ private:
 	Shader* shaderDiffuse = nullptr;
 
 	std::list<Mesh*> meshes;
-	Mesh* meshLight = nullptr;
+	std::list<Mesh*> lights;
 
 	Camera* camera = nullptr;
 };

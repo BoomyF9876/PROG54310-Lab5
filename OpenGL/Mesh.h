@@ -17,13 +17,17 @@ public:
 	void SetScale(glm::vec3 _scale) { scale = _scale; }
 	void SetRotation(glm::vec3 _rotation) { rotation = _rotation; }
 	glm::vec3 GetRotation() { return rotation; }
-	void SetLightPosition(glm::vec3 _lightPosition) { lightPosition = _lightPosition; }
+	
 	void SetLightColor(glm::vec3 _lightColor) { lightColor = _lightColor; }
+	glm::vec3 GetLightColor() { return lightColor; }
+	void SetLightDirection(glm::vec3 _lightDirection) { lightDirection = _lightDirection; }
+	glm::vec3 GetLightDirection() { return lightDirection; }
+
 	void SetCameraPosition(glm::vec3 _cameraPosition) { cameraPosition = _cameraPosition; };
 
 	void Create(Shader* _shader);
 	void CalculateTransform();
-	void Render(glm::mat4 _wvp);
+	void Render(glm::mat4 _pv, const std::list<Mesh*>& _lights);
 
 	void RotateWorld(float _angle, glm::vec3 axis);
 	void MoveTexture(float _dx, float _dy);
@@ -42,14 +46,15 @@ private:
 	glm::vec3 rotation{ 0.0f, 0.0f, 0.0f };
 	glm::vec3 scale{ 1.0f, 1.0f, 1.0f };
 
-	glm::vec3 lightPosition{ 0.0f, 0.0f, 0.0f };
+	glm::vec3 lightDirection{ 0.0f, 0.0f, 0.0f };
 	glm::vec3 lightColor{ 1.0f, 1.0f, 1.0f };
 	glm::vec3 cameraPosition{ 0, 0, 0 };
 
 	glm::vec2 texTranslation = glm::vec2(0.0);
 
-	void SetShaderVariables(glm::mat4 _pv);
+	void SetShaderVariables(glm::mat4 _pv, const std::list<Mesh*>& _lights);
 	void BindAttributes();
+	std::string Concat(const std::string& _s1, int _index, const std::string& _s2);
 };
 
 #endif

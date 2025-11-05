@@ -45,6 +45,8 @@ public:
 
 private:
 	Shader* shader = nullptr;
+	std::string diffuseMap;
+	std::string specularMap;
 	Texture* diffuseTexture = nullptr;
 	Texture* specularTexture = nullptr;
 	GLuint vertexBuffer = 0;
@@ -74,6 +76,7 @@ private:
 
 	glm::vec2 texTranslation = glm::vec2(0.0);
 
+	void LoadOBJ(const std::string& _file);
 	void SetShaderVariables(glm::mat4 _pv, const std::list<Mesh*>& _lights);
 	void BindAttributes();
 	std::string Concat(const std::string& _s1, int _index, const std::string& _s2);

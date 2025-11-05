@@ -1,5 +1,6 @@
 #include "Mesh.h"
 #include "GameController.h"
+#include <OBJ_Loader.h>
 
 Mesh::~Mesh()
 {
@@ -33,12 +34,6 @@ void Mesh::Create(json::JSON& jsonData)
 
     if (jsonData.hasKey("SpotLightconeAngle")) spotLightconeAngle = Get(jsonData, "SpotLightconeAngle").ToFloat();
     if (jsonData.hasKey("SpotLightfalloff")) spotLightfalloff = Get(jsonData, "SpotLightfalloff").ToFloat();
-
-    diffuseTexture = new Texture();
-    if (jsonData.hasKey("DiffuseTexture")) diffuseTexture->LoadTexture(Get(jsonData, "DiffuseTexture").ToString().c_str());
-
-    specularTexture = new Texture();
-    if (jsonData.hasKey("SpecularTexture")) specularTexture->LoadTexture(Get(jsonData, "SpecularTexture").ToString().c_str());
     
     vertexData = {
         -1.0f, -1.0f, -1.0f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f,
@@ -78,6 +73,15 @@ void Mesh::Create(json::JSON& jsonData)
         -1.0f, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f,
         -1.0f, 1.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f
     };
+
+    M_ASSERT(jsonData.hasKey("Model"), "Model file is required");
+    LoadOBJ(jsonData["Model"].ToString());
+
+    diffuseTexture = new Texture();
+    if (diffuseMap.size() > 0) diffuseTexture->LoadTexture(diffuseMap.c_str());
+
+    specularTexture = new Texture();
+    if (specularMap.size() > 0) specularTexture->LoadTexture(specularMap.c_str());
 
     glGenBuffers(1, &vertexBuffer);
     glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
@@ -212,4 +216,40 @@ void Mesh::LoadVec3(json::JSON& jsonData, const char* name, glm::vec3& vec)
     vec.x = Get(data, "r").ToFloat() ? Get(data, "r").ToFloat() : Get(data, "x").ToFloat();
     vec.y = Get(data, "g").ToFloat() ? Get(data, "g").ToFloat() : Get(data, "y").ToFloat();
     vec.z = Get(data, "b").ToFloat() ? Get(data, "b").ToFloat() : Get(data, "z").ToFloat();
+}
+
+void Mesh::LoadOBJ(const std::string& _filename)
+{
+    objl::Loader loader;
+
+    M_ASSERT(loader.LoadFile(_filename) == true, "Failed to load mesh");
+
+    for (auto& currentMesh: loader.LoadedMeshes)
+    {
+        for (auto& vertex : currentMesh.Vertices)
+        {
+            vertexData.push_back(vertex.Position.X);
+            vertexData.push_back(vertex.Position.Y);
+            vertexData.push_back(vertex.Position.Z);
+            vertexData.push_back(vertex.Normal.X);
+            vertexData.push_back(vertex.Normal.Y);
+            vertexData.push_back(vertex.Normal.Z);
+            vertexData.push_back(vertex.TextureCoordinate.X);
+            vertexData.push_back(vertex.TextureCoordinate.Y);
+        }
+    }
+
+    std::string mapKd = loader.LoadedMaterials[0].map_Kd;
+    const size_t lastSlashKdIdx = mapKd.find_last_of("\\/");
+    if (std::string::npos != lastSlashKdIdx)
+    {
+        diffuseMap = "../Assets/Textures/" + mapKd.erase(0, lastSlashKdIdx + 1);
+    }
+
+    std::string mapKs = loader.LoadedMaterials[0].map_Ks;
+    const size_t lastSlashKsIdx = mapKs.find_last_of("\\/");
+    if (std::string::npos != lastSlashKsIdx)
+    {
+        specularMap = "../Assets/Textures/" + mapKs.erase(0, lastSlashKsIdx + 1);
+    }
 }

@@ -2,11 +2,11 @@
     "Lights": [
       {
         "Shader": "Color",
-        "Model": "../Assets/Models/Cube.obj",
+        "Model": "../Assets/Models/Sphere.obj",
         "Position": {
-          "x": 5.0,
-          "y": 0.0,
-          "z": -4.0
+          "x": 0.0,
+          "y": -2.0,
+          "z": 0.0
         },
         "Scale": {
           "x": 0.1,
@@ -14,8 +14,8 @@
           "z": 0.1
         },
         "LightDirection": {
-          "x": -1.0,
-          "y": 0.0,
+          "x": 0.0,
+          "y": 1.0,
           "z": 0.0
         },
         "LightColor": {
@@ -36,19 +36,44 @@
         "PointLightconstant": 1.0,
         "PointLightlinear": 0.045,
         "PointLightquadratic": 0.0075,
-        "SpotLightconeAngle": 15.0,
+        "SpotLightconeAngle": 60.0,
         "SpotLightfalloff": 100.0
       }
     ],
     "Meshes": [
-        {
-            "Shader": "Diffuse",
-            "Model":  "../Assets/Models/Sphere.obj",
-            "DiffuseTexture": "../Assets/Textures/MetalFrameWood.jpg",
-            "SpecularTexture": "../Assets/Textures/MetalFrame.jpg",
-            "Position": { "x": 0.0, "y": 0.0, "z": 0.0 },
-            "Scale": { "x": 1.0, "y": 10.0, "z": 10.0 },
-            "SpecularStrength": 8.0
-        }
+      {
+        "Shader": "Diffuse",
+        "Model": "../Assets/Models/Cube.obj",
+        "DiffuseTexture": "../Assets/Textures/MetalFrameWood.jpg",
+        "SpecularTexture": "../Assets/Textures/MetalFrame.jpg",
+        "Position": {
+          "x": 3.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "Scale": {
+          "x": 1.0,
+          "y": 1.0,
+          "z": 1.0
+        },
+        "SpecularStrength": 8.0
+      },
+      {
+        "Shader": "Diffuse",
+        "Model": "../Assets/Models/Sphere.obj",
+        "DiffuseTexture": "../Assets/Textures/MetalFrameWood.jpg",
+        "SpecularTexture": "../Assets/Textures/MetalFrame.jpg",
+        "Position": {
+          "x": -3.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "Scale": {
+          "x": 1.0,
+          "y": 1.0,
+          "z": 1.0
+        },
+        "SpecularStrength": 8.0
+      }
     ]
 }

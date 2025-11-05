@@ -42,7 +42,6 @@ uniform int numLights;
 void main()
 {
     // Calculate Lambertian lighting
-    //vec3 lightDir = normalize(light.position - retFragPos); // Normalize, for correct dot product results
     vec3 lightDir = (-light.direction);
     float lambertianStrength = dot(lightDir, retNormal); // Get lambertian effect
 

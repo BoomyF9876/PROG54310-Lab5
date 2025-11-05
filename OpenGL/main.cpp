@@ -3,7 +3,6 @@
 
 int main()
 {
-	GameController* gameController = new GameController();
-	gameController->Initialize();
-	gameController->RunGame();
+	GameController::GetInstance().Initialize();
+	GameController::GetInstance().RunGame();
 }

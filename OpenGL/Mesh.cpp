@@ -1,4 +1,5 @@
 #include "Mesh.h"
+#include "GameController.h"
 
 Mesh::~Mesh()
 {
@@ -9,16 +10,36 @@ Mesh::~Mesh()
     delete specularTexture;
 }
 
-void Mesh::Create(Shader* _shader)
+void Mesh::Create(json::JSON& jsonData)
 {
-    shader = _shader;
+    M_ASSERT(jsonData.hasKey("Shader"), "Shader is required");
+    shader = GameController::GetInstance().GetShader(jsonData["Shader"].ToString().c_str());
+
+    if (jsonData.hasKey("Position")) LoadVec3(jsonData, "Position", position);
+    if (jsonData.hasKey("Rotation")) LoadVec3(jsonData, "Rotation", rotation);
+    if (jsonData.hasKey("Scale")) LoadVec3(jsonData, "Scale", scale);
+
+    if (jsonData.hasKey("LightDirection")) LoadVec3(jsonData, "LightDirection", lightDirection);
+    lightDirection = glm::normalize(lightDirection);
+
+    if (jsonData.hasKey("LightColor")) LoadVec3(jsonData, "LightColor", lightColor);
+    if (jsonData.hasKey("AmbientColor")) LoadVec3(jsonData, "AmbientColor", ambientColor);
+    if (jsonData.hasKey("SpecularColor")) LoadVec3(jsonData, "SpecularColor", specularColor);
+    if (jsonData.hasKey("SpecularStrength")) specularStrength = Get(jsonData, "SpecularStrength").ToFloat();
+
+    if (jsonData.hasKey("PointLightconstant")) pointLightconstant = Get(jsonData, "PointLightconstant").ToFloat();
+    if (jsonData.hasKey("PointLightlinear")) pointLightlinear = Get(jsonData, "PointLightlinear").ToFloat();
+    if (jsonData.hasKey("PointLightquadratic")) pointLightquadratic = Get(jsonData, "PointLightquadratic").ToFloat();
+
+    if (jsonData.hasKey("SpotLightconeAngle")) spotLightconeAngle = Get(jsonData, "SpotLightconeAngle").ToFloat();
+    if (jsonData.hasKey("SpotLightfalloff")) spotLightfalloff = Get(jsonData, "SpotLightfalloff").ToFloat();
 
     diffuseTexture = new Texture();
-    diffuseTexture->LoadTexture("../Assets/Textures/MetalFrameWood.jpg");
+    if (jsonData.hasKey("DiffuseTexture")) diffuseTexture->LoadTexture(Get(jsonData, "DiffuseTexture").ToString().c_str());
 
     specularTexture = new Texture();
-    specularTexture->LoadTexture("../Assets/Textures/MetalFrame.jpg");
-
+    if (jsonData.hasKey("SpecularTexture")) specularTexture->LoadTexture(Get(jsonData, "SpecularTexture").ToString().c_str());
+    
     vertexData = {
         -1.0f, -1.0f, -1.0f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f,
         1.0f, -1.0f, -1.0f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f,
@@ -58,49 +79,6 @@ void Mesh::Create(Shader* _shader)
         -1.0f, 1.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f
     };
 
-    //vertexData = {
-    //    //50.0f, 50.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f,
-    //    //50.0f, -50.0f, 0.0f, 1.0f, 0.549f, 0.0f, 1.0f, 0.0f,
-    //    //-50.0f, -50.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f,
-    //    //-50.0f, 50.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f
-    //    -50.0f, -50.0f, -50.0f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f,
-    //    50.0f, -50.0f, -50.0f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f,
-    //    50.0f, 50.0f, -50.0f, 0.0f, 0.0f, -1.0f, 1.0f, 1.0f,
-    //    50.0f, 50.0f, -50.0f, 0.0f, 0.0f, -1.0f, 1.0f, 1.0f,
-    //    -50.0f, 50.0f, -50.0f, 0.0f, 0.0f, -1.0f, 0.0f, 1.0f,
-    //    -50.0f, -50.0f, -50.0f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f,
-    //    -50.0f, -50.0f, 50.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-    //    50.0f, -50.0f, 50.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f,
-    //    50.0f, 50.0f, 50.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
-    //    50.0f, 50.0f, 50.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
-    //    -50.0f, 50.0f, 50.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
-    //    -50.0f, -50.0f, 50.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-    //    -50.0f, 50.0f, 50.0f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-    //    -50.0f, 50.0f, -50.0f, -1.0f, 0.0f, 0.0f, 1.0f, 1.0f,
-    //    -50.0f, -50.0f, -50.0f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
-    //    -50.0f, -50.0f, -50.0f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
-    //    -50.0f, -50.0f, 50.0f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-    //    -50.0f, 50.0f, 50.0f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-    //    50.0f, 50.0f, 50.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-    //    50.0f, 50.0f, -50.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f,
-    //    50.0f, -50.0f, -50.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
-    //    50.0f, -50.0f, -50.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
-    //    50.0f, -50.0f, 50.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-    //    50.0f, 50.0f, 50.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-    //    -50.0f, -50.0f, -50.0f, 0.0f, -1.0f, 0.0f, 0.0f, 1.0f,
-    //    50.0f, -50.0f, -50.0f, 0.0f, -1.0f, 0.0f, 1.0f, 1.0f,
-    //    50.0f, -50.0f, 50.0f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f,
-    //    50.0f, -50.0f, 50.0f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f,
-    //    -50.0f, -50.0f, 50.0f, 0.0f, -1.0f, 0.0f, 0.0f, 0.0f,
-    //    -50.0f, -50.0f, -50.0f, 0.0f, -1.0f, 0.0f, 0.0f, 1.0f,
-    //    -50.0f, 50.0f, -50.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-    //    50.0f, 50.0f, -50.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f,
-    //    50.0f, 50.0f, 50.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,
-    //    50.0f, 50.0f, 50.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,
-    //    -50.0f, 50.0f, 50.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f,
-    //    -50.0f, 50.0f, -50.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f
-    //};
-
     glGenBuffers(1, &vertexBuffer);
     glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
     glBufferData(GL_ARRAY_BUFFER, vertexData.size() * sizeof(float), vertexData.data(), GL_STATIC_DRAW);
@@ -116,6 +94,8 @@ void Mesh::Create(Shader* _shader)
 
 void Mesh::BindAttributes()
 {
+#pragma region Set Vertices
+    glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
     glEnableVertexAttribArray(shader->GetAttrVertices());
     glVertexAttribPointer(
         shader->GetAttrVertices(),
@@ -125,18 +105,6 @@ void Mesh::BindAttributes()
         8 * sizeof(float),
         (void*)0
     );
-
-    //glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-
-    /*glEnableVertexAttribArray(shader -> GetAttrColors());
-    glVertexAttribPointer(
-        shader->GetAttrColors(),
-        3,
-        GL_FLOAT,
-        GL_FALSE,
-        8 * sizeof(float),
-        (void*)(3 * sizeof(float))
-    );*/
 
     glEnableVertexAttribArray(shader->GetAttrNormals());
     glVertexAttribPointer(
@@ -160,13 +128,6 @@ void Mesh::BindAttributes()
 
     glVertexAttrib2fv(shader->GetAttrTexTranslation(), glm::value_ptr(texTranslation));
 
-    /*glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, texture1->GetTexture());
-    glUniform1i(shader->GetTexSampler1(), 0);
-
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, texture2->GetTexture());
-    glUniform1i(shader->GetTexSampler2(), 1);*/
 }
 
 void Mesh::SetShaderVariables(glm::mat4 _pv, const std::list<Mesh*>& _lights)
@@ -175,28 +136,29 @@ void Mesh::SetShaderVariables(glm::mat4 _pv, const std::list<Mesh*>& _lights)
     shader->SetMat4("WVP", _pv * world);
     shader->SetVec3("CameraPosition", cameraPosition);
 
+    M_ASSERT((_lights.size() <= 4), "Diffuse Shader only supports 4 lights");
+    shader->SetInt("numLights", _lights.size());
     int i = 0;
     for (auto& light : _lights)
     {
         shader->SetVec3(Concat("light[", i, "].position").c_str(), light->GetPosition());
         shader->SetVec3(Concat("light[", i, "].direction").c_str(), light->GetLightDirection());
 
-        shader->SetVec3(Concat("light[", i, "].ambientColor").c_str(), { 0.1f, 0.1f, 0.1f });
+        shader->SetVec3(Concat("light[", i, "].ambientColor").c_str(), light->GetAmbientColor());
         shader->SetVec3(Concat("light[", i, "].diffuseColor").c_str(), light->GetLightColor());
-        shader->SetVec3(Concat("light[", i, "].specularColor").c_str(), {3.0f, 3.0f, 3.0f});
+        shader->SetVec3(Concat("light[", i, "].specularColor").c_str(), light->GetSpecularColor());
 
-        shader->SetFloat(Concat("light[", i, "].constant").c_str(), 1.0f);
-        shader->SetFloat(Concat("light[", i, "].linear").c_str(), 0.045f);
-        shader->SetFloat(Concat("light[", i, "].quadratic").c_str(), 0.0075f);
+        shader->SetFloat(Concat("light[", i, "].constant").c_str(), light->GetPointLightConstant());
+        shader->SetFloat(Concat("light[", i, "].linear").c_str(), light->GetPointLightLinear());
+        shader->SetFloat(Concat("light[", i, "].quadratic").c_str(), light->GetPointLightQuadratic());
 
-        //shader->SetVec3("light.color", lightColor);
-        shader->SetFloat(Concat("light[", i, "].coneAngle").c_str(), glm::radians(45.0f));
-        shader->SetFloat(Concat("light[", i, "].falloff").c_str(), 100);
-    
+        shader->SetFloat(Concat("light[", i, "].coneAngle").c_str(), glm::radians(light->GetConeAngle()));
+        shader->SetFloat(Concat("light[", i, "].falloff").c_str(), light->GetFalloff());
+
         i++;
     }
 
-    shader->SetFloat("material.specularStrength", 8.0f);
+    shader->SetFloat("material.specularStrength", specularStrength);
     shader->SetTextureSampler("material.diffuseTexture", GL_TEXTURE0, 0, diffuseTexture->GetTexture());
     shader->SetTextureSampler("material.specularTexture", GL_TEXTURE1, 1, specularTexture->GetTexture());
 }
@@ -227,18 +189,27 @@ void Mesh::Render(glm::mat4 _wvp, const std::list<Mesh*>& _lights)
     glDisableVertexAttribArray(shader->GetAttrTexTranslation());
 }
 
-void Mesh::RotateWorld(float _angle, glm::vec3 axis)
-{
-    world = glm::rotate(world, _angle, axis);
-}
-
-void Mesh::MoveTexture(float _dx, float _dy)
-{
-    texTranslation += glm::vec2(_dx, _dy);
-}
+//void Mesh::RotateWorld(float _angle, glm::vec3 axis)
+//{
+//    world = glm::rotate(world, _angle, axis);
+//}
+//
+//void Mesh::MoveTexture(float _dx, float _dy)
+//{
+//    texTranslation += glm::vec2(_dx, _dy);
+//}
 
 std::string Mesh::Concat(const std::string& _s1, int _index, const std::string& _s2)
 {
     std::string index = std::to_string(_index);
     return (_s1 + index + _s2);
+}
+
+void Mesh::LoadVec3(json::JSON& jsonData, const char* name, glm::vec3& vec)
+{
+    json::JSON& data = Get(jsonData, name);
+
+    vec.x = Get(data, "r").ToFloat() ? Get(data, "r").ToFloat() : Get(data, "x").ToFloat();
+    vec.y = Get(data, "g").ToFloat() ? Get(data, "g").ToFloat() : Get(data, "y").ToFloat();
+    vec.z = Get(data, "b").ToFloat() ? Get(data, "b").ToFloat() : Get(data, "z").ToFloat();
 }

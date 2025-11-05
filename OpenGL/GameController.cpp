@@ -5,77 +5,58 @@
 void GameController::Initialize()
 {
     GLFWwindow* window = WindowController::GetInstance().GetWindow();
+    
     M_ASSERT(glewInit() == GLEW_OK, "Unable");
     glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
-    glClearColor(0.1f, 0.1f, 0.1f, 0.0f);
+    //glClearColor(0.1f, 0.1f, 0.1f, 0.0f);
     glEnable(GL_DEPTH_TEST);
     srand(time(0));
 
-    camera = new Camera(
-        WindowController::GetInstance().GetResolution(),
-        { 10, 10, 10 }, { 0, 0, 0 }, { 0, 1, 0 }
-    );
+    //camera = new Camera(
+    //    WindowController::GetInstance().GetResolution(),
+    //    { 10, 10, 10 }, { 0, 0, 0 }, { 0, 1, 0 }
+    //);
+    Load();
 }
 
 void GameController::RunGame()
 {
-    shaderColor = new Shader();
-    shaderColor->LoadShaders("Color.vertexshader", "Color.fragmentshader");
+    //shaderColor = new Shader();
+    //shaderColor->LoadShaders("Color.vertexshader", "Color.fragmentshader");
 
-    shaderDiffuse = new Shader();
-    shaderDiffuse->LoadShaders("Diffuse.vertexshader", "Diffuse.fragmentshader");
+    //shaderDiffuse = new Shader();
+    //shaderDiffuse->LoadShaders("Diffuse.vertexshader", "Diffuse.fragmentshader");
 
-    for (int i = 0; i < 4; i++)
-    {
-        Mesh* light = new Mesh();
-        light->Create(shaderColor);
-        light->SetPosition({ 5.0f, 0.0f, (float)i * 3.0f - 4.0f});
-        light->SetLightDirection(glm::normalize(glm::vec3({0.0f, 0.0f, (float)i * 3.0f - 4.0f}) - light->GetPosition()));
-        light->SetLightColor({ glm::linearRand(0.0f, 1.0f), glm::linearRand(0.0f, 1.0f), glm::linearRand(0.0f, 1.0f) });
-        light->SetScale({ 0.1f, 0.1f, 0.1f });
-        
-        lights.push_back(light);
-    }
+    //for (int i = 0; i < 4; i++)
+    //{
+    //    Mesh* light = new Mesh();
+    //    light->Create(shaderColor);
+    //    light->SetPosition({ 5.0f, 0.0f, (float)i * 3.0f - 4.0f});
+    //    light->SetLightDirection(glm::normalize(glm::vec3({0.0f, 0.0f, (float)i * 3.0f - 4.0f}) - light->GetPosition()));
+    //    light->SetLightColor({ glm::linearRand(0.0f, 1.0f), glm::linearRand(0.0f, 1.0f), glm::linearRand(0.0f, 1.0f) });
+    //    light->SetScale({ 0.1f, 0.1f, 0.1f });
+    //    
+    //    lights.push_back(light);
+    //}
 
 
-    for (int row = 0; row < 10; row++)
-    {
-        for (int col = 0; col < 10; col++)
-        {
-            Mesh* mesh = new Mesh();
-            mesh->Create(shaderDiffuse);
-            //mesh->SetLightColor({ 1.0f, 1.0f, 1.0f });
-            //mesh->SetLightPosition(meshLight->GetPosition());
-            mesh->SetCameraPosition(camera->GetPosition());
-            mesh->SetScale({ 1.0f, 1.0f, 1.0f });
-            mesh->SetPosition({0.0f, (float)row * 2.0f - 9.0f, (float)col * 2.0f - 9.0f});
-            meshes.push_back(mesh);
-        }
-    }
+    //for (int row = 0; row < 10; row++)
+    //{
+    //    for (int col = 0; col < 10; col++)
+    //    {
+    //        Mesh* mesh = new Mesh();
+    //        mesh->Create(shaderDiffuse);
+    //        //mesh->SetLightColor({ 1.0f, 1.0f, 1.0f });
+    //        //mesh->SetLightPosition(meshLight->GetPosition());
+    //        mesh->SetCameraPosition(camera->GetPosition());
+    //        mesh->SetScale({ 1.0f, 1.0f, 1.0f });
+    //        mesh->SetPosition({0.0f, (float)row * 2.0f - 9.0f, (float)col * 2.0f - 9.0f});
+    //        meshes.push_back(mesh);
+    //    }
+    //}
 
     GLFWwindow* window = WindowController::GetInstance().GetWindow();
     do {
-        //mesh->MoveTexture(-0.0001f, -0.0001f);
-
-        //if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        //{
-        //    mesh->MoveTexture(0, -0.01f);
-        //}
-        //if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        //{
-        //    mesh->MoveTexture(0.01f, 0);
-        //}
-        //if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        //{
-        //    mesh->MoveTexture(0, 0.01f);
-        //}
-        //if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        //{
-        //    mesh->MoveTexture(-0.01f, 0);
-        //}
-
-        //System::Windows::Forms::Application::DoEvents();
-
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         
         for (auto& light: lights)
@@ -85,7 +66,7 @@ void GameController::RunGame()
         
         for (auto& mesh : meshes)
         {
-            mesh->SetRotation(mesh->GetRotation() + glm::vec3(0.0f, 0.001f, 0.0f));
+            //mesh->SetRotation(mesh->GetRotation() + glm::vec3(0.0f, 0.0001f, 0.0f));
             mesh->Render(camera->GetProjection() * camera->GetView(), lights);
         }
 
@@ -107,7 +88,97 @@ void GameController::RunGame()
         delete light;
     }
 
-    delete shaderColor;
-    delete shaderDiffuse;
+    for (auto& shader : shaders)
+    {
+        delete shader.second;
+    }
+
     delete camera;
+}
+
+void GameController::Load()
+{
+#pragma region Settings
+    std::ifstream inputStream("../Assets/settings.json");
+    std::string str((std::istreambuf_iterator<char>(inputStream)), std::istreambuf_iterator<char>());
+    json::JSON document = json::JSON::Load(str);
+#pragma endregion
+
+#pragma region Clear Color
+    glm::vec3 ClearColor{ 0, 0, 0 };
+    json::JSON& jsonClearColor = Get(document, "ClearColor");
+    ClearColor.x = Get(jsonClearColor, "r").ToFloat();
+    ClearColor.y = Get(jsonClearColor, "g").ToFloat();
+    ClearColor.z = Get(jsonClearColor, "b").ToFloat();
+    glClearColor(ClearColor.r, ClearColor.g, ClearColor.b, 0.0f);
+#pragma endregion
+
+#pragma region Camera
+    float _fov, _near, _far;
+    glm::vec3 CameraPosition{ 1, 0, 0 };
+    glm::vec3 CameraLookAt{ 0, 0, 0 };
+    
+    json::JSON& jsonCamera = Get(document, "Camera");
+    json::JSON& jsonCameraPos = Get(jsonCamera, "Position");
+    CameraPosition.x = Get(jsonCameraPos, "x").ToFloat();
+    CameraPosition.y = Get(jsonCameraPos, "y").ToFloat();
+    CameraPosition.z = Get(jsonCameraPos, "z").ToFloat();
+
+    json::JSON& jsonCameraLookAt = Get(jsonCamera, "LookAt");
+    CameraLookAt.x = Get(jsonCameraLookAt, "x").ToFloat();
+    CameraLookAt.y = Get(jsonCameraLookAt, "y").ToFloat();
+    CameraLookAt.z = Get(jsonCameraLookAt, "z").ToFloat();
+
+    _fov = Get(jsonCamera, "fov").ToFloat();
+    _near = Get(jsonCamera, "near").ToFloat();
+    _far = Get(jsonCamera, "far").ToFloat();
+    
+    if (!_fov) _fov = 45.0f;
+    if (!_near) _near = 0.1f;
+    if (!_far) _far = 1000.0f;
+    
+    camera = new Camera(
+        WindowController::GetInstance().GetResolution(),
+        CameraPosition, CameraLookAt, { 0, 1, 0 },
+        _fov, _near, _far
+    );
+#pragma endregion
+
+#pragma region Shader
+    json::JSON& shadersJSON = Get(document, "Shaders");
+    for (auto& shaderJSON : shadersJSON.ArrayRange())
+    {
+        assert(shaderJSON.hasKey("name"));
+        assert(shaderJSON.hasKey("vertex"));
+        assert(shaderJSON.hasKey("fragment"));
+        Shader* shaderColor = new Shader();
+        shaderColor->LoadShaders(shaderJSON["vertex"].ToString().c_str(), shaderJSON["fragment"].ToString().c_str());
+        shaders.emplace(shaderJSON["name"].ToString().c_str(), shaderColor);
+    }
+#pragma endregion
+
+#pragma region Scene
+    M_ASSERT(document.hasKey("DefaultFile"), "Settings requires a default file");
+    std::string defaultFile = document["DefaultFile"].ToString();
+
+    document = LoadJson(defaultFile);
+    
+    json::JSON& lightsJSON = Get(document, "Lights");
+    for (auto& lightJSON : lightsJSON.ArrayRange())
+    {
+        Mesh* light = new Mesh();
+        light->Create(lightJSON);
+        light->SetCameraPosition(camera->GetPosition());
+        lights.push_back(light);
+    }
+
+    json::JSON& meshesJSON = Get(document, "Meshes");
+    for (auto& meshJSON : meshesJSON.ArrayRange())
+    {
+        Mesh* mesh = new Mesh();
+        mesh->Create(meshJSON);
+        mesh->SetCameraPosition(camera->GetPosition());
+        meshes.push_back(mesh);
+    }
+#pragma endregion
 }

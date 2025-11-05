@@ -23,14 +23,25 @@ public:
 	void SetLightDirection(glm::vec3 _lightDirection) { lightDirection = _lightDirection; }
 	glm::vec3 GetLightDirection() { return lightDirection; }
 
+	glm::vec3 GetAmbientColor() { return ambientColor; }
+	glm::vec3 GetSpecularColor() { return specularColor; }
+	float GetSpecularStrength() { return specularStrength; }
+
+	float GetPointLightConstant() { return pointLightconstant; }
+	float GetPointLightLinear() { return pointLightlinear; }
+	float GetPointLightQuadratic() { return pointLightquadratic; }
+
+	float GetConeAngle() { return spotLightconeAngle; }
+	float GetFalloff() { return spotLightfalloff; }
+
 	void SetCameraPosition(glm::vec3 _cameraPosition) { cameraPosition = _cameraPosition; };
 
-	void Create(Shader* _shader);
+	void Create(json::JSON& jsonData);
 	void CalculateTransform();
 	void Render(glm::mat4 _pv, const std::list<Mesh*>& _lights);
 
-	void RotateWorld(float _angle, glm::vec3 axis);
-	void MoveTexture(float _dx, float _dy);
+	//void RotateWorld(float _angle, glm::vec3 axis);
+	//void MoveTexture(float _dx, float _dy);
 
 private:
 	Shader* shader = nullptr;
@@ -48,6 +59,17 @@ private:
 
 	glm::vec3 lightDirection{ 0.0f, 0.0f, 0.0f };
 	glm::vec3 lightColor{ 1.0f, 1.0f, 1.0f };
+	glm::vec3 ambientColor{0.1f, 0.1f, 0.1f};
+	glm::vec3 specularColor{ 0.1f, 0.1f, 0.1f };
+	float specularStrength = 1.0f;
+
+	float pointLightconstant = 1.0f;
+	float pointLightlinear = 1.0f;
+	float pointLightquadratic = 1.0f;
+
+	float spotLightconeAngle = 1.0f;
+	float spotLightfalloff = 1.0f;
+
 	glm::vec3 cameraPosition{ 0, 0, 0 };
 
 	glm::vec2 texTranslation = glm::vec2(0.0);
@@ -55,6 +77,8 @@ private:
 	void SetShaderVariables(glm::mat4 _pv, const std::list<Mesh*>& _lights);
 	void BindAttributes();
 	std::string Concat(const std::string& _s1, int _index, const std::string& _s2);
+
+	void LoadVec3(json::JSON& jsonData, const char* name, glm::vec3& vec);
 };
 
 #endif

@@ -11,20 +11,35 @@
 class GameController
 {
 public:
-	GameController() = default;
-	~GameController() = default;
+	static GameController& GetInstance()
+	{
+		static GameController instance;
+		return instance;
+	}
 
 	void Initialize();
 	void RunGame();
+	void Load();
+
+	Shader* GetShader(const char* shaderName)
+	{
+		auto itr = shaders.find(shaderName);
+		assert(itr != shaders.end());
+		return itr->second;
+	}
 
 private:
-	Shader* shaderColor = nullptr;
-	Shader* shaderDiffuse = nullptr;
+	std::map<std::string, Shader*> shaders;
 
 	std::list<Mesh*> meshes;
 	std::list<Mesh*> lights;
 
 	Camera* camera = nullptr;
+
+	inline explicit GameController() = default;
+	inline ~GameController() = default;
+	inline explicit GameController(GameController const&) = delete;
+	inline GameController& operator=(GameController const&) = delete;
 };
 
 #endif

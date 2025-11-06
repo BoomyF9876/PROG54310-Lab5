@@ -2,7 +2,7 @@
   "Lights": [
     {
       "Shader": "Color",
-      "Model": "../Assets/Models/Cube.obj",
+      "Model": "../Assets/Models/Sphere.obj",
       "Position": {
         "x": 4.0,
         "y": 0.0,
@@ -37,11 +37,11 @@
       "PointLightlinear": 0.0,
       "PointLightquadratic": 0.0,
       "SpotLightconeAngle": 90.0,
-      "SpotLightfalloff": 100.0
+      "SpotLightfalloff": 1.0
     },
     {
       "Shader": "Color",
-      "Model": "../Assets/Models/Cube.obj",
+      "Model": "../Assets/Models/Sphere.obj",
       "Position": {
         "x": -4.0,
         "y": 0.0,
@@ -76,7 +76,7 @@
       "PointLightlinear": 0.0,
       "PointLightquadratic": 0.0,
       "SpotLightconeAngle": 90.0,
-      "SpotLightfalloff": 100.0
+      "SpotLightfalloff": 1.0
     },
     {
       "Shader": "Color",
@@ -115,11 +115,11 @@
       "PointLightlinear": 0.045,
       "PointLightquadratic": 0.0075,
       "SpotLightconeAngle": 90.0,
-      "SpotLightfalloff": 100.0
+      "SpotLightfalloff": 1.0
     },
     {
       "Shader": "Color",
-      "Model": "../Assets/Models/Cone.obj",
+      "Model": "../Assets/Models/Sphere.obj",
       "Position": {
         "x": 0.0,
         "y": 2.0,

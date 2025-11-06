@@ -142,6 +142,7 @@ void Mesh::SetShaderVariables(glm::mat4 _pv, const std::list<Mesh*>& _lights)
 
     M_ASSERT((_lights.size() <= 4), "Diffuse Shader only supports 4 lights");
     shader->SetInt("numLights", _lights.size());
+    shader->SetVec3("lightColor", lightColor);
     int i = 0;
     for (auto& light : _lights)
     {
@@ -192,16 +193,6 @@ void Mesh::Render(glm::mat4 _wvp, const std::list<Mesh*>& _lights)
     glDisableVertexAttribArray(shader->GetAttrTexCoords());
     glDisableVertexAttribArray(shader->GetAttrTexTranslation());
 }
-
-//void Mesh::RotateWorld(float _angle, glm::vec3 axis)
-//{
-//    world = glm::rotate(world, _angle, axis);
-//}
-//
-//void Mesh::MoveTexture(float _dx, float _dy)
-//{
-//    texTranslation += glm::vec2(_dx, _dy);
-//}
 
 std::string Mesh::Concat(const std::string& _s1, int _index, const std::string& _s2)
 {

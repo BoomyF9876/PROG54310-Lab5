@@ -16,8 +16,6 @@ void Shader::LoadAttributes()
     attrWVP = glGetUniformLocation(programID, "WVP");
     attrTexCoords = glGetAttribLocation(programID, "texCoords");
     attrTexTranslation = glGetAttribLocation(programID, "texTranslation");
-    /*attrTexSampler1 = glGetUniformLocation(programID, "texSampler1");
-    attrTexSampler2 = glGetUniformLocation(programID, "texSampler2");*/
 }
 
 void Shader::SetVec3(const char* _name, glm::vec3 _value)

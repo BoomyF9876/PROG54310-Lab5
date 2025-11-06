@@ -40,9 +40,6 @@ public:
 	void CalculateTransform();
 	void Render(glm::mat4 _pv, const std::list<Mesh*>& _lights);
 
-	//void RotateWorld(float _angle, glm::vec3 axis);
-	//void MoveTexture(float _dx, float _dy);
-
 private:
 	Shader* shader = nullptr;
 	std::string diffuseMap;

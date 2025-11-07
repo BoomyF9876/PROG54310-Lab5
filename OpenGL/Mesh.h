@@ -42,8 +42,9 @@ public:
 
 private:
 	Shader* shader = nullptr;
-	std::string diffuseMap;
-	std::string specularMap;
+	std::string diffuseMap = "";
+	std::string specularMap = "";
+	std::string lightType = "";
 	Texture* diffuseTexture = nullptr;
 	Texture* specularTexture = nullptr;
 	GLuint vertexBuffer = 0;
@@ -63,10 +64,10 @@ private:
 	float specularStrength = 1.0f;
 
 	float pointLightconstant = 1.0f;
-	float pointLightlinear = 1.0f;
-	float pointLightquadratic = 1.0f;
+	float pointLightlinear = 0.0f;
+	float pointLightquadratic = 0.0f;
 
-	float spotLightconeAngle = 1.0f;
+	float spotLightconeAngle = 90.0f;
 	float spotLightfalloff = 1.0f;
 
 	glm::vec3 cameraPosition{ 0, 0, 0 };

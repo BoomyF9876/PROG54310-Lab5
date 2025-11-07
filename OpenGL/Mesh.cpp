@@ -28,6 +28,8 @@ void Mesh::Create(json::JSON& jsonData)
     if (jsonData.hasKey("SpecularColor")) LoadVec3(jsonData, "SpecularColor", specularColor);
     if (jsonData.hasKey("SpecularStrength")) specularStrength = Get(jsonData, "SpecularStrength").ToFloat();
 
+    if (jsonData.hasKey("LightType")) lightType = Get(jsonData, "LightType").ToString();
+
     if (jsonData.hasKey("PointLightconstant")) pointLightconstant = Get(jsonData, "PointLightconstant").ToFloat();
     if (jsonData.hasKey("PointLightlinear")) pointLightlinear = Get(jsonData, "PointLightlinear").ToFloat();
     if (jsonData.hasKey("PointLightquadratic")) pointLightquadratic = Get(jsonData, "PointLightquadratic").ToFloat();
